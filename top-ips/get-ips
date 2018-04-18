@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# domain name
+LOGFILE=$1
+
+
+# error if no log specified
+[ $# -eq 0 ] && exit 1
+
+
+# go though log file and create report
+if [ -f $LOGFILE ]
+then
+ echo "proccessing log.."
+ echo ""
+
+ awk '{ print $1}' $LOGFILE | sort  | uniq -c  | sort -nr | head -n 10
+fi
