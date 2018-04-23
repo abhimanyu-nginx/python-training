@@ -1,8 +1,7 @@
 
-
-import socket
 import sys
 import os.path
+import collections
 
 __author__ = "Abhimanyu Nagurkar"
 __copyright__ = "Copyright (C) Nginx Inc. All rights reserved."
@@ -18,22 +17,15 @@ Assumption here is that the access.log will have IP address as first column
 if len(sys.argv) > 1:
     if os.path.isfile(sys.argv[1]):
         ips = {}
-        file = open(sys.argv[1], "r");
-        content = file.readlines()
-        for line in content:
-            ip = line.split(" ")[0]
-            try:
-                # for ip address validation only
-                socket.inet_aton(ip)
-                ips[ip] = ips.get(ip, 0) + 1
-            except socket.error:
-                print "Address not valid"
+        cnt = collections.Counter()
+        with open(sys.argv[1]) as infile:
+            for line in infile:
+                ip = line.split(" ")[0]
+                cnt[ip] += 1
 
-        sorted_ips = [(k,v) for v,k in sorted([(v,k) for k,v in ips.items()],reverse=True)]
-
-        for ip in sorted_ips[:10]:
+        for ip in cnt.most_common(10)[:10]:
             print  ip[1] , ip[0]
-        file.close()
+
     else:
         print "Provide correct access log path"
 else:
